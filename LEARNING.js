@@ -2,9 +2,9 @@ CORS work the same for if your html is run inside file:// or http://
 
 codepen.io js consolidation part4 CORS part
 ========================================================================
-the origin from request header has to match access-control-allow-header from response header
+the origin from request header has to match access-control-allow-origin from response header
 or 
-if the the access-control-allow-header is *
+if the the access-control-allow-origin is *
   
 use test-cors.org
 https://www.html5rocks.com/en/tutorials/cors/
@@ -212,3 +212,53 @@ before do
            'Access-Control-Allow-Methods' => ['OPTIONS', 'GET', 'POST'],
            'Access-Control-Allow-Headers' => 'Content-Type'  
 end
+
+
+
+from your calling-uno-service in glitch.me
+==================================================================
+CORS work the same for if your html is run inside file:// or http://
+2.if you don't pass content-type key in your ajax call, the above should work, a.k.a
+in sinatra main.rb
+
+before do
+content_type :json
+headers 'Access-Control-Allow-Origin' => '*',
+'Access-Control-Allow-Methods' => ['OPTIONS', 'GET', 'POST']
+end
+
+If you pass content-type key in your $.ajax call, you need two more
+a):
+options '/movie' do
+200
+end
+b):
+before do
+content_type :json
+headers 'Access-Control-Allow-Origin' => '*',
+'Access-Control-Allow-Methods' => ['OPTIONS', 'GET', 'POST'],
+'Access-Control-Allow-Headers' => 'Content-Type'
+end
+
+4 http://stackoverflow.com/questions/14322984/differences-between-contenttype-and-datatype-in-jquery-ajax-function
+
+ContentType: When sending data to the server, use this content type. Default is application/x-www-form-urlencoded; charset=UTF-8, which is fine for most cases.
+Accepts: The content type sent in the request header that tells the server what kind of response it will accept in return. Depends on DataType.
+DataType: The type of data that you're expecting back from the server. If none is specified, jQuery will try to infer it based on the MIME type of the response. Can be text, xml, html, script, json, jsonp.
+
+
+
+https://enable-cors.org/server_expressjs.html very good, having code snippet
+
+https://stackoverflow.com/questions/32372947/node-js-socket-io-same-origin-policy-error
+
+====================================================================================================
+https://senecacd.wordpress.com/2013/02/15/enabling-cors-on-a-node-js-server-same-origin-policy-issue/
+
+That means that if you want to make an ajax call to carrers.stackoverflow.com/gethired/js from your own page, the browser will not apply Same Origin Policy restrictions since the careers.stackoverflow server has indicated that the script is allowed to be loaded from different domains. by saying access-control-allow-origin: "*". Here the origin value has to be either same as request header origin value (client domain) or any domain like using star symbol
+
+*An important note to make is that only the http://careers.stackoverflow.com/gethired/js has the Same Origin Rules turned off, however, the careersstackoverflow.com domain still has them enabled on other pages.
+
+This means you can enable the header options on a response level, making sure a few API calls are open to the public without putting your whole server in danger of being exploited.
+
+This lead us to our problem.
